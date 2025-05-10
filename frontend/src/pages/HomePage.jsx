@@ -1,7 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 const HomePage = () => {
   const [visible, setVisible] = useState(false);
+  const horizontalScrollRef = useRef(null);
+
+
+  {/* Transform vertical mouse wheel scrolling into horizontal scroll*/}
+  useEffect(() => {
+    const scrollContainer = horizontalScrollRef.current;
+
+    const handleMouseWheel = (e) => {
+      if (scrollContainer) {
+        e.preventDefault();
+        scrollContainer.scrollLeft += e.deltaY * 3;
+      }
+    };
+    scrollContainer.addEventListener('wheel', handleMouseWheel, {passive: false});
+
+    return() => {
+      scrollContainer.removeEventListener('wheel', handleMouseWheel);
+    }
+  }, [])
 
   return (
     <div className='relative h-screen w-screen'>
@@ -26,11 +45,13 @@ const HomePage = () => {
       </div>
 
       {/* Horizontal Scroll Container */}
-      <div className='flex overflow-x-auto overflow-y-hidden h-screen w-screen scroll-smooth'>
+      <div ref={horizontalScrollRef} className='flex overflow-x-auto overflow-y-hidden h-screen w-screen scroll-smooth'>
+        {/* Logo landing */}
         <section className="flex items-center justify-center flex-shrink-0 w-screen h-screen">
           <h1>LOGO</h1>
         </section>
 
+        {/* Middle section with motto and clothes previews */}
         <section className="relative flex items-center justify-center flex-shrink-0 w-[140vw] h-screen p-8">
           <h2 className="max-w-3xl text-center z-10">
             MOTTO GOES HERE MOTTO GOES HERE
@@ -46,6 +67,7 @@ const HomePage = () => {
           <div className="absolute bottom-1/3 left-1/2 w-20 h-20 bg-purple-500" />
         </section>
 
+        {/* Newsletter signup section */}
         <section className="flex items-center justify-center flex-shrink-0 w-screen h-screen">
           <div className='text-center'>
             <h1>Sign up for our newsletter!</h1>
@@ -55,6 +77,7 @@ const HomePage = () => {
             </form>
           </div>
         </section>
+
       </div>
     </div>
   );
