@@ -7,5 +7,5 @@ export default defineConfig({
   plugins: [react(),
     tailwindcss(),
   ],
-  base: "/shop-site-proto"
+  base: "/shop-site-proto/"
 })
