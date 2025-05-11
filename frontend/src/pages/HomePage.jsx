@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { motion } from "motion/react"
 
 const HomePage = () => {
   const [visible, setVisible] = useState(false);
   const horizontalScrollRef = useRef(null);
 
 
-  {/* Transform vertical mouse wheel scrolling into horizontal scroll*/}
+  {/* Transform vertical mouse wheel scrolling into horizontal scroll*/ }
   useEffect(() => {
     const scrollContainer = horizontalScrollRef.current;
 
@@ -15,9 +16,9 @@ const HomePage = () => {
         scrollContainer.scrollLeft += e.deltaY * 3;
       }
     };
-    scrollContainer.addEventListener('wheel', handleMouseWheel, {passive: false});
+    scrollContainer.addEventListener('wheel', handleMouseWheel, { passive: false });
 
-    return() => {
+    return () => {
       scrollContainer.removeEventListener('wheel', handleMouseWheel);
     }
   }, [])
@@ -52,19 +53,71 @@ const HomePage = () => {
         </section>
 
         {/* Middle section with motto and clothes previews */}
-        <section className="relative flex items-center justify-center flex-shrink-0 w-[140vw] h-screen p-8">
+        <section className="relative flex items-center justify-center flex-shrink-0 w-[130vw] h-screen p-8">
           <h2 className="max-w-3xl text-center z-10">
             MOTTO GOES HERE MOTTO GOES HERE
           </h2>
 
           {/* Placeholders for clothes images */}
-          <div className="absolute top-10 left-10 w-20 h-20 bg-red-400" />
-          <div className="absolute top-20 right-16 w-20 h-20 bg-black" />
-          <div className="absolute bottom-12 left-20 w-20 h-20 bg-yellow-300" />
-          <div className="absolute bottom-8 right-8 w-20 h-20 bg-green-500" />
-          <div className="absolute top-1/2 left-1/3 w-20 h-20 bg-blue-500" />
-          <div className="absolute top-1/4 right-1/4 w-20 h-20 bg-pink-400" />
-          <div className="absolute bottom-1/3 left-1/2 w-20 h-20 bg-purple-500" />
+          <motion.div
+            className="absolute top-10 left-10 w-20 h-20 bg-red-400"
+            initial={{ opacity: 0, y: -50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: false, amount: 0.2 }}
+          >
+          </motion.div>
+
+          <motion.div
+            className="absolute top-20 right-16 w-20 h-20 bg-black"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: false, amount: 0.2 }}
+          >
+          </motion.div>
+
+          <motion.div
+            className="absolute bottom-12 left-20 w-20 h-20 bg-yellow-300"
+            initial={{ opacity: 0, x: 70 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1.2 }}
+            viewport={{ once: false, amount: 0.2 }}
+          >
+          </motion.div>
+
+          <motion.div
+            className="absolute bottom-8 right-8 w-20 h-20 bg-green-500"
+            initial={{ opacity: 0, x: -60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: false, amount: 0.2 }}
+          />
+
+          <motion.div
+            className="absolute top-1/2 left-1/3 w-20 h-20 bg-blue-500"
+            initial={{ opacity: 0, x: 70 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1.3 }}
+            viewport={{ once: false, amount: 0.2 }}
+          />
+
+          <motion.div
+            className="absolute top-1/4 right-1/4 w-20 h-20 bg-pink-400"
+            initial={{ opacity: 0, x: 70 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.9 }}
+            viewport={{ once: false, amount: 0.2 }}
+          />
+
+          <motion.div
+            className="absolute bottom-1/3 left-1/2 w-20 h-20 bg-purple-500"
+            initial={{ opacity: 0, x: -70 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1 }}
+            viewport={{ once: false, amount: 0.2 }}
+          />
+
         </section>
 
         {/* Newsletter signup section */}
