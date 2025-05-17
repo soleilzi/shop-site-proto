@@ -7,86 +7,49 @@ import tanpants from "../assets/tanpants.png"
 
 const HomePage = () => {
   const [visible, setVisible] = useState(false);
-  const [mottoVisible, setMottoVisible] = useState(false);
-  const [isExiting, setIsExiting] = useState(false);
   const horizontalScrollRef = useRef(null);
-  const mottoRef = useRef(null);
-  const scrollTimeoutRef = useRef(null);
 
+  {/* Setup for motto animate-out */ }
+  const mottoRef = useRef(null);
+  const isInView = useInView(mottoRef, { amount: 0.8 })
+  const animationControls = useAnimation();
+  const prevIsInViewRef = useRef(isInView);
+
+
+  {/* Transform vertical mouse wheel scrolling into horizontal scroll*/ }
   useEffect(() => {
     const scrollContainer = horizontalScrollRef.current;
     if (!scrollContainer) return;
 
-    const handleScroll = () => {
-      // Clear any existing timeout
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-
-      // Debounce the scroll handling
-      scrollTimeoutRef.current = setTimeout(() => {
-        const scrollPosition = scrollContainer.scrollLeft;
-        const screenWidth = window.innerWidth;
-        
-        // Add buffer zones for smoother transitions
-        const enterThreshold = screenWidth * 0.8;
-        const exitThreshold = screenWidth * 1.7;
-        
-        if (scrollPosition >= enterThreshold && scrollPosition < exitThreshold) {
-          if (!mottoVisible) {
-            setMottoVisible(true);
-            setIsExiting(false);
-          }
-        } else {
-          if (mottoVisible && !isExiting) {
-            setIsExiting(true);
-            setTimeout(() => {
-              setMottoVisible(false);
-              setIsExiting(false);
-            }, 1000); // Slightly longer duration for smoother exit
-          }
-        }
-      }, 50); // Small debounce delay
-    };
-
     const handleMouseWheel = (e) => {
       e.preventDefault();
-      const scrollSpeed = 2; // Reduced scroll speed for smoother movement
-      scrollContainer.scrollLeft += e.deltaY * scrollSpeed;
-    };
+      scrollContainer.scrollLeft += e.deltaY * 3;
 
-    scrollContainer.addEventListener('scroll', handleScroll);
+    };
     scrollContainer.addEventListener('wheel', handleMouseWheel, { passive: false });
 
     return () => {
-      scrollContainer.removeEventListener('scroll', handleScroll);
       scrollContainer.removeEventListener('wheel', handleMouseWheel);
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
+    }
+  }, []);
+
+  useEffect(() => {
+    const currIsInView = isInView;
+    const prevIsInView = prevIsInViewRef.current;
+
+    if (currIsInView !== prevIsInView) {
+      if (currIsInView) {
+        animationControls.set({ x: 200 });
+        animationControls.start({ opacity: 1, x: 0 })
+      } else {
+        animationControls.start({ opacity: 0, x: -200 });
       }
     }
-  }, [mottoVisible]);
+    prevIsInViewRef.current = currIsInView;
+  }, [isInView, animationControls])
 
   return (
     <div className='relative h-screen w-screen'>
-      {/* Motto - Fixed Position */}
-      {mottoVisible && (
-        <motion.div
-          ref={mottoRef}
-          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50"
-          initial={{ opacity: 0, x: 400 }}
-          animate={{ 
-            opacity: isExiting ? 0 : 1, 
-            x: isExiting ? -400 : 0
-          }}
-          transition={{ duration: 1, ease: "easeInOut" }}
-        >
-          <h2 className="max-w-3xl text-center relative z-10 bg-white/80 backdrop-blur-sm p-4 rounded-lg">
-            MOTTO GOES HERE MOTTO GOES HERE
-          </h2>
-        </motion.div>
-      )}
-
       {/* Hamburger Button */}
       <button onClick={() => setVisible(!visible)}
         className="absolute top-2 left-2 z-50 text-black px-4 py-2 rounded cursor-pointer text-2xl">
@@ -114,63 +77,51 @@ const HomePage = () => {
           <h1>LOGO</h1>
         </section>
 
-        {/* Middle section with clothes previews */}
+        {/* Middle section with motto and clothes previews */}
         <section className="relative flex items-center justify-center flex-shrink-0 w-[130vw] h-screen p-8">
+          <motion.div
+            ref={mottoRef}
+            initial={{ opacity: 0}}
+            transition={{ duration: 0.8 }}
+            animate={animationControls}
+          >
+            <h2 className="max-w-3xl text-center relative z-10 bg-white">
+              MOTTO GOES HERE MOTTO GOES HERE
+            </h2>
+          </motion.div>
+
           {/* Placeholders for clothes images */}
           <ClothesPreviewBox distance={60} transitionDuration={0.7} imgSource={bluesweater} x={'top-10'} y={'left-10'} />
           <ClothesPreviewBox distance={80} transitionDuration={0.9} imgSource={greyshorts} x={'bottom-12'} y={'left-20'} />
           <ClothesPreviewBox distance={70} transitionDuration={1.3} imgSource={tanpants} x={'top-1/2'} y={'left-1/3'} />
 
+
           <motion.div
             className="absolute top-20 right-16 w-20 h-20 bg-black"
             initial={{ opacity: 0, x: 50 }}
-            animate={{ 
-              opacity: [0, 1, 1, 0],
-              x: [-50, -500, -1500, -2000],
-              transition: {
-                duration: 20,
-                ease: "linear",
-                repeat: Infinity,
-                repeatDelay: 0.5,
-                times: [0, 0.2, 0.8, 1]
-              }
-            }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: false, amount: 0.2 }}
-          />
+          >
+          </motion.div>
+
 
           <motion.div
             className="absolute bottom-8 right-8 w-20 h-20 bg-green-500"
-            initial={{ opacity: 0, x: 60 }}
-            animate={{ 
-              opacity: [0, 1, 1, 0],
-              x: [-60, -500, -1500, -2000],
-              transition: {
-                duration: 16,
-                ease: "linear",
-                repeat: Infinity,
-                repeatDelay: 0.5,
-                times: [0, 0.2, 0.8, 1]
-              }
-            }}
+            initial={{ opacity: 0, x: -60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: false, amount: 0.2 }}
           />
 
           <motion.div
             className="absolute top-1/4 right-1/4 w-20 h-20 bg-pink-400"
             initial={{ opacity: 0, x: 70 }}
-            animate={{ 
-              opacity: [0, 1, 1, 0],
-              x: [-70, -500, -1500, -2000],
-              transition: {
-                duration: 18,
-                ease: "linear",
-                repeat: Infinity,
-                repeatDelay: 0.5,
-                times: [0, 0.2, 0.8, 1]
-              }
-            }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.9 }}
             viewport={{ once: false, amount: 0.2 }}
           />
+
         </section>
 
         {/* Newsletter signup section */}
